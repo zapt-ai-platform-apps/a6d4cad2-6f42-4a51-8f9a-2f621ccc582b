@@ -37,7 +37,6 @@ The Personal Book Tracker app allows users to keep track of books they've read, 
      - Total books read.
      - Average rating of books you've read.
      - Most read authors.
-     - Genres you've explored (if applicable).
      - Visualize your reading progress with interactive charts.
 
 ## User Journeys
