@@ -19,7 +19,6 @@ function App() {
   const [newBook, setNewBook] = createSignal({
     title: '',
     author: '',
-    coverImageUrl: '',
     status: 'Want to Read',
   });
   const [user, setUser] = createSignal(null);
@@ -109,7 +108,6 @@ function App() {
         setNewBook({
           title: '',
           author: '',
-          coverImageUrl: '',
           status: 'Want to Read',
         });
       } else {
@@ -203,7 +201,7 @@ function App() {
         .filter((book) => book.status === 'Read')
         .map((book) => book.title)
         .join(', ');
-      const prompt = `Based on the following books I've read and liked: ${readBooks}, recommend me 5 books in JSON format with the structure: { "recommendations": [ { "title": "", "author": "", "coverImageUrl": "" } ] }`;
+      const prompt = `Based on the following books I've read and liked: ${readBooks}, recommend me 5 books in JSON format with the structure: { "recommendations": [ { "title": "", "author": "" } ] }`;
       const result = await createEvent('chatgpt_request', {
         prompt,
         response_type: 'json',
@@ -320,14 +318,6 @@ function App() {
                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
                   required
                 />
-                <input
-                  type="text"
-                  placeholder="Cover Image URL"
-                  value={newBook().coverImageUrl}
-                  onInput={(e) => setNewBook({ ...newBook(), coverImageUrl: e.target.value })}
-                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
-                  required
-                />
                 <select
                   value={newBook().status}
                   onChange={(e) => setNewBook({ ...newBook(), status: e.target.value })}
@@ -357,12 +347,7 @@ function App() {
                 <For each={books()}>
                   {(book) => (
                     <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
-                      <img
-                        src={book.coverImageUrl}
-                        alt={book.title}
-                        class="w-full h-48 object-cover rounded-md mb-4"
-                      />
-                      <h3 class="text-xl font-semibold text-green-600">{book.title}</h3>
+                      <h3 class="text-xl font-semibold text-green-600 mb-2">{book.title}</h3>
                       <p class="text-gray-700 mb-2">{book.author}</p>
                       <select
                         value={book.status}
@@ -444,12 +429,7 @@ function App() {
                   <For each={recommendations()}>
                     {(rec) => (
                       <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
-                        <img
-                          src={rec.coverImageUrl}
-                          alt={rec.title}
-                          class="w-full h-48 object-cover rounded-md mb-4"
-                        />
-                        <h3 class="text-xl font-semibold text-green-600">{rec.title}</h3>
+                        <h3 class="text-xl font-semibold text-green-600 mb-2">{rec.title}</h3>
                         <p class="text-gray-700 mb-2">{rec.author}</p>
                         <button
                           onClick={() => saveRecommendedBook(rec)}

@@ -4,7 +4,6 @@ export const books = pgTable('books', {
   id: serial('id').primaryKey(),
   title: text('title').notNull(),
   author: text('author').notNull(),
-  coverImageUrl: text('cover_image_url').notNull(),
   status: varchar('status', { length: 20 }).notNull(),
   rating: integer('rating'),
   review: text('review'),

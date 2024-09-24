@@ -10,7 +10,7 @@ The Personal Book Tracker app allows users to keep track of books they've read, 
    - The sign-in page includes the text "Sign in with ZAPT" and a link to the ZAPT marketing site.
 
 2. **Add Books**
-   - Users can add books to their collection by entering the title, author, and cover image URL.
+   - Users can add books to their collection by entering the title and author.
    - Books can be added with an initial status of "Want to Read", "Currently Reading", or "Read".
 
 3. **Manage Book Collection**
@@ -54,8 +54,7 @@ The Personal Book Tracker app allows users to keep track of books they've read, 
 - **Step 2**: Provide the book details:
   - Title
   - Author
-  - Cover Image URL
-  - Status ("Want to Read", "Currently Reading", "Read")
+  - Status ("Want to Read", "Currently Reading", or "Read")
 - **Step 3**: Click "Save Book".
 - **Step 4**: The book is added to your collection and displayed in the list.
 

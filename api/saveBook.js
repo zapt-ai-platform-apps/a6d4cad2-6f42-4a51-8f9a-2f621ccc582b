@@ -11,10 +11,10 @@ export default async function handler(req, res) {
 
   try {
     const user = await authenticateUser(req);
-    const { title, author, coverImageUrl, status } = req.body;
+    const { title, author, status } = req.body;
 
-    if (!title || !author || !coverImageUrl || !status) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!title || !author || !status) {
+      return res.status(400).json({ error: 'Title, author, and status are required' });
     }
 
     const sql = neon(process.env.NEON_DB_URL);
@@ -23,7 +23,6 @@ export default async function handler(req, res) {
     const result = await db.insert(books).values({
       title,
       author,
-      coverImageUrl,
       status,
       userId: user.id,
     }).returning();
