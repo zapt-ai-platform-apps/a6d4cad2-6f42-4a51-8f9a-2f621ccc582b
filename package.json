@@ -1,0 +1,31 @@
+{
+  "name": "personal-book-tracker",
+  "version": "1.0.0",
+  "description": "A personal book tracker app built with SolidJS, Vite, and Tailwind CSS.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "drizzle-kit push && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "solid-js": "^1.8.22",
+    "drizzle-orm": "^0.33.0",
+    "@neondatabase/serverless": "^0.9.5",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/auth-ui-solid": "^0.3.8",
+    "@supabase/supabase-js": "^2.45.4",
+    "solid-markdown": "^2.0.13",
+    "chart.js": "^4.4.0",
+    "solid-chartjs": "^0.6.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "vite": "^5.4.7",
+    "vite-plugin-solid": "^2.10.2",
+    "drizzle-kit": "^0.24.2",
+    "tailwind-scrollbar": "^2.0.2"
+  }
+}
