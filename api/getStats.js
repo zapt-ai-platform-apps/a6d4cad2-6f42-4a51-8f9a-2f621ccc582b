@@ -2,7 +2,7 @@ import { books, goals } from '../drizzle/schema.js';
 import { authenticateUser } from "./_apiUtils.js";
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and, count, avg } from 'drizzle-orm';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -26,8 +26,8 @@ export default async function handler(req, res) {
     // Fetch books read
     const booksResult = await db
       .select({
-        totalBooks: sql`COUNT(*)`.as('totalBooks'),
-        averageRating: sql`AVG(${books.rating})`.as('averageRating'),
+        totalBooks: count(books.id).as('totalBooks'),
+        averageRating: avg(books.rating).as('averageRating'),
       })
       .from(books)
       .where(and(eq(books.userId, user.id), eq(books.status, 'Read')));
