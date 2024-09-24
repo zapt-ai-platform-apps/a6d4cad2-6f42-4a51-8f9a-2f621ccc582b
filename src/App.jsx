@@ -3,7 +3,7 @@ import { createEvent, supabase } from './supabaseClient';
 import { Auth } from '@supabase/auth-ui-solid';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { Bar } from 'solid-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, Colors } from 'chart.js';
+import { Chart as ChartJS, Title, Tooltip, Legend, Colors, CategoryScale, LinearScale, BarElement } from 'chart.js';
 
 function App() {
   const [books, setBooks] = createSignal([]);
@@ -25,7 +25,7 @@ function App() {
   };
 
   onMount(() => {
-    ChartJS.register(Title, Tooltip, Legend, Colors);
+    ChartJS.register(Title, Tooltip, Legend, Colors, CategoryScale, LinearScale, BarElement);
     checkUserSignedIn();
   });
 
@@ -264,7 +264,7 @@ function App() {
                 <select
                   value={newBook().status}
                   onChange={(e) => setNewBook({ ...newBook(), status: e.target.value })}
-                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border cursor-pointer"
                 >
                   <option value="Want to Read">Want to Read</option>
                   <option value="Currently Reading">Currently Reading</option>

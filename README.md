@@ -50,8 +50,8 @@ The Personal Book Tracker app allows users to keep track of books they've read, 
 
 ### 2. Add a New Book
 
-- **Step 1**: On the home page, click the "Add New Book" button.
-- **Step 2**: Fill in the book details:
+- **Step 1**: On the home page, fill in the "Add New Book" form.
+- **Step 2**: Provide the book details:
   - Title
   - Author
   - Cover Image URL
@@ -63,14 +63,14 @@ The Personal Book Tracker app allows users to keep track of books they've read, 
 
 - **Step 1**: Navigate to your book collection on the home page.
 - **Step 2**: Find the book you want to update.
-- **Step 3**: Click on the status dropdown and select the new status.
-- **Step 4**: Optionally, add a rating and review if the status is "Read".
-- **Step 5**: Click "Update" to save changes.
+- **Step 3**: Use the status dropdown to select the new status.
+- **Step 4**: If the status is "Read", you can add a rating and review.
+- **Step 5**: Changes are saved automatically.
 
 ### 4. Generate Book Recommendations
 
 - **Step 1**: On the home page, click the "Get Recommendations" button.
-- **Step 2**: Wait for the recommendations to generate (loading state displayed).
+- **Step 2**: Wait momentarily while recommendations are generated (loading state displayed).
 - **Step 3**: A list of recommended books is displayed.
 - **Step 4**: For each recommended book, you can:
   - View details.
