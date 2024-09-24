@@ -1,3 +1,4 @@
+```jsx
 import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { createEvent, supabase } from './supabaseClient';
 import { Auth } from '@supabase/auth-ui-solid';
@@ -233,8 +234,158 @@ function App() {
             </button>
           </div>
 
-          <!-- Rest of your component code remains unchanged -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="col-span-1">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Add New Book</h2>
+              <form onSubmit={saveBook} class="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Title"
+                  value={newBook().title}
+                  onInput={(e) => setNewBook({ ...newBook(), title: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Author"
+                  value={newBook().author}
+                  onInput={(e) => setNewBook({ ...newBook(), author: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Cover Image URL"
+                  value={newBook().coverImageUrl}
+                  onInput={(e) => setNewBook({ ...newBook(), coverImageUrl: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                  required
+                />
+                <select
+                  value={newBook().status}
+                  onChange={(e) => setNewBook({ ...newBook(), status: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                >
+                  <option value="Want to Read">Want to Read</option>
+                  <option value="Currently Reading">Currently Reading</option>
+                  <option value="Read">Read</option>
+                </select>
+                <button
+                  type="submit"
+                  class={`w-full px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer ${loading() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={loading()}
+                >
+                  {loading() ? 'Saving...' : 'Save Book'}
+                </button>
+              </form>
+            </div>
 
+            <div class="col-span-1 md:col-span-2 lg:col-span-2">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">My Books</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto h-full pr-4">
+                <For each={books()}>
+                  {(book) => (
+                    <div class="bg-white p-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                      <img src={book.coverImageUrl} alt={book.title} class="w-full h-48 object-cover rounded-md mb-4" />
+                      <h3 class="text-lg font-semibold mb-2 text-green-600">{book.title}</h3>
+                      <p class="text-gray-700 mb-2">by {book.author}</p>
+                      <p class="text-gray-600 mb-2">Status: {book.status}</p>
+                      <div class="space-y-2">
+                        <select
+                          value={book.status}
+                          onChange={(e) => updateBookStatus(book.id, e.target.value)}
+                          class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border cursor-pointer"
+                        >
+                          <option value="Want to Read">Want to Read</option>
+                          <option value="Currently Reading">Currently Reading</option>
+                          <option value="Read">Read</option>
+                        </select>
+                        <Show when={book.status === 'Read'}>
+                          <div>
+                            <input
+                              type="number"
+                              placeholder="Rating (1-5)"
+                              min="1"
+                              max="5"
+                              value={book.rating || ''}
+                              onInput={(e) => updateBookStatus(book.id, book.status, e.target.value, book.review)}
+                              class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                            />
+                            <textarea
+                              placeholder="Review"
+                              value={book.review || ''}
+                              onInput={(e) => updateBookStatus(book.id, book.status, book.rating, e.target.value)}
+                              class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border mt-2"
+                            ></textarea>
+                          </div>
+                        </Show>
+                      </div>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </div>
+
+            <div class="col-span-1">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Reading Goals</h2>
+              <div class="bg-white p-4 rounded-lg shadow-md">
+                <input
+                  type="number"
+                  placeholder="Set your yearly goal"
+                  value={goal().target || ''}
+                  onInput={(e) => setGoal({ ...goal(), target: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                />
+                <button
+                  onClick={saveGoal}
+                  class={`w-full mt-4 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer ${loading() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={loading()}
+                >
+                  {loading() ? 'Saving...' : 'Set Goal'}
+                </button>
+              </div>
+            </div>
+
+            <div class="col-span-1 md:col-span-2">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Statistics</h2>
+              <div class="bg-white p-4 rounded-lg shadow-md">
+                <Bar data={chartData} options={{ responsive: true }} width={500} height={300} />
+                <p class="mt-4">Total Books Read: {stats().totalBooks || 0}</p>
+                <p>Average Rating: {stats().averageRating ? stats().averageRating.toFixed(2) : 'N/A'}</p>
+              </div>
+            </div>
+
+            <div class="col-span-1 md:col-span-2">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Book Recommendations</h2>
+              <button
+                onClick={handleGenerateRecommendations}
+                class={`w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer ${recommendationLoading() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={recommendationLoading()}
+              >
+                {recommendationLoading() ? 'Generating...' : 'Get Recommendations'}
+              </button>
+              <Show when={recommendations().length > 0}>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  <For each={recommendations()}>
+                    {(rec) => (
+                      <div class="bg-white p-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                        <img src={rec.coverImageUrl} alt={rec.title} class="w-full h-48 object-cover rounded-md mb-4" />
+                        <h3 class="text-lg font-semibold mb-2 text-green-600">{rec.title}</h3>
+                        <p class="text-gray-700 mb-2">by {rec.author}</p>
+                        <button
+                          onClick={() => setNewBook({ title: rec.title, author: rec.author, coverImageUrl: rec.coverImageUrl, status: 'Want to Read' })}
+                          class="w-full mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer"
+                        >
+                          Add to My Books
+                        </button>
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </Show>
+            </div>
+          </div>
         </div>
       </Show>
     </div>
@@ -242,3 +393,4 @@ function App() {
 }
 
 export default App;
+```
