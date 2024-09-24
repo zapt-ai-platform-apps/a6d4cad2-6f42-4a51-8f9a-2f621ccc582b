@@ -90,6 +90,10 @@ function App() {
         const savedBook = await response.json();
         setBooks([...books(), savedBook]);
         setNewBook({ title: '', author: '', status: 'Want to Read' });
+        // Fetch stats if the new book is marked as 'Read'
+        if (savedBook.status === 'Read') {
+          fetchStats();
+        }
       } else {
         console.error('Error saving book');
       }
@@ -119,6 +123,10 @@ function App() {
           return book;
         });
         setBooks(updatedBooks);
+        // Fetch stats if the book status is updated to 'Read'
+        if (status === 'Read') {
+          fetchStats();
+        }
       } else {
         console.error('Error updating book');
       }
@@ -284,7 +292,7 @@ function App() {
                       <Show when={book.status !== 'Read'}>
                         <select
                           value={book.status}
-                          onChange={(e) => updateBookStatus(book.id, e.target.value)}
+                          onChange={(e) => updateBookStatus(book.id, e.target.value, book.rating, book.review)}
                           class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent mt-2 box-border"
                         >
                           <option value="Want to Read">Want to Read</option>
