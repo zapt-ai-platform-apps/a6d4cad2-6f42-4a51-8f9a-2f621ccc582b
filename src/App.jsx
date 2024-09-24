@@ -3,11 +3,25 @@ import { createEvent, supabase } from './supabaseClient';
 import { Auth } from '@supabase/auth-ui-solid';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { Bar } from 'solid-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, Colors, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  Colors,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from 'chart.js';
 
 function App() {
   const [books, setBooks] = createSignal([]);
-  const [newBook, setNewBook] = createSignal({ title: '', author: '', coverImageUrl: '', status: 'Want to Read' });
+  const [newBook, setNewBook] = createSignal({
+    title: '',
+    author: '',
+    coverImageUrl: '',
+    status: 'Want to Read',
+  });
   const [user, setUser] = createSignal(null);
   const [currentPage, setCurrentPage] = createSignal('login');
   const [loading, setLoading] = createSignal(false);
@@ -17,7 +31,9 @@ function App() {
   const [recommendationLoading, setRecommendationLoading] = createSignal(false);
 
   const checkUserSignedIn = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
       setUser(user);
       setCurrentPage('homePage');
@@ -30,7 +46,9 @@ function App() {
   });
 
   createEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+    const {
+      data: authListener,
+    } = supabase.auth.onAuthStateChange((_, session) => {
       if (session?.user) {
         setUser(session.user);
         setCurrentPage('homePage');
@@ -53,11 +71,13 @@ function App() {
 
   const fetchBooks = async () => {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const response = await fetch('/api/getBooks', {
       headers: {
-        'Authorization': `Bearer ${session.access_token}`
-      }
+        Authorization: `Bearer ${session.access_token}`,
+      },
     });
     if (response.ok) {
       const data = await response.json();
@@ -71,12 +91,14 @@ function App() {
   const saveBook = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     try {
       const response = await fetch('/api/saveBook', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newBook()),
@@ -84,7 +106,12 @@ function App() {
       if (response.ok) {
         const savedBook = await response.json();
         setBooks([...books(), savedBook]);
-        setNewBook({ title: '', author: '', coverImageUrl: '', status: 'Want to Read' });
+        setNewBook({
+          title: '',
+          author: '',
+          coverImageUrl: '',
+          status: 'Want to Read',
+        });
       } else {
         console.error('Error saving book');
       }
@@ -96,18 +123,24 @@ function App() {
 
   const updateBookStatus = async (bookId, status, rating = null, review = null) => {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     try {
       const response = await fetch('/api/updateBookStatus', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ id: bookId, status, rating, review }),
       });
       if (response.ok) {
-        setBooks(books().map(book => book.id === bookId ? { ...book, status, rating, review } : book));
+        setBooks(
+          books().map((book) =>
+            book.id === bookId ? { ...book, status, rating, review } : book
+          )
+        );
       } else {
         console.error('Error updating book status');
       }
@@ -120,11 +153,13 @@ function App() {
 
   const fetchStats = async () => {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const response = await fetch('/api/getStats', {
       headers: {
-        'Authorization': `Bearer ${session.access_token}`
-      }
+        Authorization: `Bearer ${session.access_token}`,
+      },
     });
     if (response.ok) {
       const data = await response.json();
@@ -137,12 +172,14 @@ function App() {
 
   const saveGoal = async () => {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     try {
       const response = await fetch('/api/saveGoal', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(goal()),
@@ -162,11 +199,14 @@ function App() {
   const handleGenerateRecommendations = async () => {
     setRecommendationLoading(true);
     try {
-      const readBooks = books().filter(book => book.status === 'Read').map(book => book.title).join(', ');
+      const readBooks = books()
+        .filter((book) => book.status === 'Read')
+        .map((book) => book.title)
+        .join(', ');
       const prompt = `Based on the following books I've read and liked: ${readBooks}, recommend me 5 books in JSON format with the structure: { "recommendations": [ { "title": "", "author": "", "coverImageUrl": "" } ] }`;
       const result = await createEvent('chatgpt_request', {
         prompt,
-        response_type: 'json'
+        response_type: 'json',
       });
       if (result && result.recommendations) {
         setRecommendations(result.recommendations);
@@ -177,6 +217,32 @@ function App() {
       console.error('Error creating event:', error);
     }
     setRecommendationLoading(false);
+  };
+
+  const saveRecommendedBook = async (book) => {
+    setLoading(true);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    try {
+      const response = await fetch('/api/saveBook', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...book, status: 'Want to Read' }),
+      });
+      if (response.ok) {
+        const savedBook = await response.json();
+        setBooks([...books(), savedBook]);
+      } else {
+        console.error('Error saving book');
+      }
+    } catch (error) {
+      console.error('Error saving book:', error);
+    }
+    setLoading(false);
   };
 
   createEffect(() => {
@@ -233,18 +299,189 @@ function App() {
             </button>
           </div>
 
-          {/* Rest of the component remains the same */}
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Add New Book Form */}
+            <div class="col-span-1">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Add New Book</h2>
+              <form onSubmit={saveBook} class="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Title"
+                  value={newBook().title}
+                  onInput={(e) => setNewBook({ ...newBook(), title: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Author"
+                  value={newBook().author}
+                  onInput={(e) => setNewBook({ ...newBook(), author: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Cover Image URL"
+                  value={newBook().coverImageUrl}
+                  onInput={(e) => setNewBook({ ...newBook(), coverImageUrl: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                  required
+                />
+                <select
+                  value={newBook().status}
+                  onChange={(e) => setNewBook({ ...newBook(), status: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border cursor-pointer"
+                >
+                  <option value="Want to Read">Want to Read</option>
+                  <option value="Currently Reading">Currently Reading</option>
+                  <option value="Read">Read</option>
+                </select>
+                <button
+                  type="submit"
+                  class={`w-full px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer ${
+                    loading() ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  disabled={loading()}
+                >
+                  <Show when={loading()}>Saving...</Show>
+                  <Show when={!loading()}>Save Book</Show>
+                </button>
+              </form>
+            </div>
 
-          <div class="col-span-1 md:col-span-2">
-            <h2 class="text-2xl font-bold mb-4 text-green-600">Statistics</h2>
-            <div class="bg-white p-4 rounded-lg shadow-md">
-              <Bar data={chartData()} options={{ responsive: true }} width={500} height={300} />
-              <p class="mt-4">Total Books Read: {stats().totalBooks || 0}</p>
-              <p>Average Rating: {stats().averageRating ? stats().averageRating.toFixed(2) : 'N/A'}</p>
+            {/* Book List */}
+            <div class="col-span-1 md:col-span-2 lg:col-span-2">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Book Collection</h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <For each={books()}>
+                  {(book) => (
+                    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
+                      <img
+                        src={book.coverImageUrl}
+                        alt={book.title}
+                        class="w-full h-48 object-cover rounded-md mb-4"
+                      />
+                      <h3 class="text-xl font-semibold text-green-600">{book.title}</h3>
+                      <p class="text-gray-700 mb-2">{book.author}</p>
+                      <select
+                        value={book.status}
+                        onChange={(e) => updateBookStatus(book.id, e.target.value)}
+                        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border mb-2 cursor-pointer"
+                      >
+                        <option value="Want to Read">Want to Read</option>
+                        <option value="Currently Reading">Currently Reading</option>
+                        <option value="Read">Read</option>
+                      </select>
+                      <Show when={book.status === 'Read'}>
+                        <div class="space-y-2">
+                          <input
+                            type="number"
+                            placeholder="Rating (1-5)"
+                            min="1"
+                            max="5"
+                            value={book.rating}
+                            onInput={(e) =>
+                              updateBookStatus(book.id, book.status, e.target.value, book.review)
+                            }
+                            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                          />
+                          <textarea
+                            placeholder="Review"
+                            value={book.review}
+                            onInput={(e) =>
+                              updateBookStatus(book.id, book.status, book.rating, e.target.value)
+                            }
+                            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                          />
+                        </div>
+                      </Show>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </div>
+
+            {/* Reading Goals */}
+            <div class="col-span-1">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Reading Goals</h2>
+              <div class="bg-white p-4 rounded-lg shadow-md">
+                <input
+                  type="number"
+                  placeholder="Books to read this year"
+                  value={goal().target}
+                  onInput={(e) => setGoal({ ...goal(), target: e.target.value })}
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent box-border"
+                />
+                <button
+                  onClick={saveGoal}
+                  class={`w-full mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer ${
+                    loading() ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  disabled={loading()}
+                >
+                  <Show when={loading()}>Saving...</Show>
+                  <Show when={!loading()}>Set Goal</Show>
+                </button>
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            <div class="col-span-1 md:col-span-2 lg:col-span-3">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Recommendations</h2>
+              <button
+                onClick={handleGenerateRecommendations}
+                class={`w-full px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer mb-4 ${
+                  recommendationLoading() ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                disabled={recommendationLoading()}
+              >
+                <Show when={recommendationLoading()}>Generating Recommendations...</Show>
+                <Show when={!recommendationLoading()}>Get Recommendations</Show>
+              </button>
+              <Show when={recommendations().length > 0}>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  <For each={recommendations()}>
+                    {(rec) => (
+                      <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
+                        <img
+                          src={rec.coverImageUrl}
+                          alt={rec.title}
+                          class="w-full h-48 object-cover rounded-md mb-4"
+                        />
+                        <h3 class="text-xl font-semibold text-green-600">{rec.title}</h3>
+                        <p class="text-gray-700 mb-2">{rec.author}</p>
+                        <button
+                          onClick={() => saveRecommendedBook(rec)}
+                          class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer mt-auto"
+                        >
+                          Add to Collection
+                        </button>
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </Show>
+            </div>
+
+            {/* Statistics */}
+            <div class="col-span-1 md:col-span-2">
+              <h2 class="text-2xl font-bold mb-4 text-green-600">Statistics</h2>
+              <div class="bg-white p-4 rounded-lg shadow-md">
+                <Bar
+                  data={chartData()}
+                  options={{ responsive: true }}
+                  width={500}
+                  height={300}
+                />
+                <p class="mt-4">Total Books Read: {stats().totalBooks || 0}</p>
+                <p>
+                  Average Rating:{' '}
+                  {stats().averageRating ? stats().averageRating.toFixed(2) : 'N/A'}
+                </p>
+              </div>
             </div>
           </div>
-
-          {/* Rest of the component remains the same */}
         </div>
       </Show>
     </div>
