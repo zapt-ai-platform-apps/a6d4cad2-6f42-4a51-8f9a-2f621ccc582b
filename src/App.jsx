@@ -1,4 +1,3 @@
-```jsx
 import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { supabase, createEvent } from './supabaseClient';
 import { Auth } from '@supabase/auth-ui-solid';
@@ -402,4 +401,3 @@ function App() {
 }
 
 export default App;
-```
