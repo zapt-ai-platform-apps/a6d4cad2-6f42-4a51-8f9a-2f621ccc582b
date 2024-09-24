@@ -2,11 +2,8 @@ import { createSignal, onMount, createEffect, For, Show } from 'solid-js';
 import { createEvent, supabase } from './supabaseClient';
 import { Auth } from '@supabase/auth-ui-solid';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { SolidMarkdown } from "solid-markdown";
-import { Chart, BarController, BarElement, CategoryScale, LinearScale } from 'chart.js';
-import { Bar } from 'solid-chartjs';
-
-Chart.register(BarController, BarElement, CategoryScale, LinearScale);
+import { Chart, Bar } from 'solid-chartjs';
+import 'chart.js/auto';
 
 function App() {
   const [books, setBooks] = createSignal([]);
@@ -30,7 +27,7 @@ function App() {
   onMount(checkUserSignedIn);
 
   createEffect(() => {
-    const authListener = supabase.auth.onAuthStateChange((_, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
       if (session?.user) {
         setUser(session.user);
         setCurrentPage('homePage');
@@ -41,7 +38,7 @@ function App() {
     });
 
     return () => {
-      authListener.data.unsubscribe();
+      authListener.subscription.unsubscribe();
     };
   });
 
@@ -184,6 +181,17 @@ function App() {
     fetchBooks();
     fetchStats();
   });
+
+  const chartData = {
+    labels: ['Books Read', 'Goal'],
+    datasets: [
+      {
+        label: 'Reading Progress',
+        data: [stats().totalBooks || 0, stats().goal || 0],
+        backgroundColor: ['#34D399', '#60A5FA'],
+      },
+    ],
+  };
 
   return (
     <div class="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 text-gray-800">
@@ -343,6 +351,9 @@ function App() {
                 <div class="mt-4 bg-white p-6 rounded-lg shadow-md">
                   <h3 class="font-semibold text-xl text-green-600 mb-2">Progress</h3>
                   <p>You have read {stats().totalBooks} out of {stats().goal} books.</p>
+                  <div class="mt-4">
+                    <Bar data={chartData} />
+                  </div>
                 </div>
               </Show>
             </div>
