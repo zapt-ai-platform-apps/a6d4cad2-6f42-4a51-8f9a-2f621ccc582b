@@ -2,7 +2,7 @@ import { books, goals } from '../drizzle/schema.js';
 import { authenticateUser } from "./_apiUtils.js";
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,8 +12,8 @@ export default async function handler(req, res) {
 
   try {
     const user = await authenticateUser(req);
-    const sql = neon(process.env.NEON_DB_URL);
-    const db = drizzle(sql);
+    const sqlClient = neon(process.env.NEON_DB_URL);
+    const db = drizzle(sqlClient);
 
     const currentYear = new Date().getFullYear();
 
@@ -24,12 +24,12 @@ export default async function handler(req, res) {
     const goal = goalResult.length > 0 ? goalResult[0].target : null;
 
     // Fetch books read
-    const booksResult = await db.select()
-      .from(books)
-      .fields({
-        totalBooks: db.raw('COUNT(*)'),
-        averageRating: db.raw('AVG(rating)'),
+    const booksResult = await db
+      .select({
+        totalBooks: sql`COUNT(*)`.as('totalBooks'),
+        averageRating: sql`AVG(${books.rating})`.as('averageRating'),
       })
+      .from(books)
       .where(and(eq(books.userId, user.id), eq(books.status, 'Read')));
 
     const totalBooks = parseInt(booksResult[0].totalBooks, 10) || 0;
