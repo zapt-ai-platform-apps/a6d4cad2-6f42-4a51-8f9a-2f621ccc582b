@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "drizzle-kit push && vite build",
+    "build": "drizzle-kit push --force && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
